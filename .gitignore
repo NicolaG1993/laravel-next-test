@@ -1,0 +1,21 @@
+# Node
+node_modules/
+.next/
+dist/
+.env
+.env.local
+.env.*.local
+.DS_Store
+
+# PHP / Laravel
+/vendor/
+/.idea/
+Homestead.yaml
+Homestead.json
+/public/storage
+/storage/*.key
+/storage/debugbar
+/storage/framework/cache/data
+
+# OS
+*.log
