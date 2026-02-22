@@ -1,10 +1,8 @@
-import { api } from "@/services/api";
 import { Metadata } from "next";
 import Link from "next/link";
 
 interface PageProps {
     params: Promise<{
-        id: string;
         slug: string;
     }>;
 }
@@ -12,10 +10,17 @@ interface PageProps {
 // Generiamo percorsi statici per i prodotti
 export async function generateStaticParams() {
     try {
-        const { data: products } = await api.get("/products");
-        
+        const response = await fetch("http://localhost:3000/api/products", {
+            cache: "no-store",
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch products");
+        }
+
+        const products = await response.json();
+
         return products.map((product: any) => ({
-            id: product.id.toString(),
             slug: product.slug,
         }));
     } catch (error) {
@@ -30,18 +35,36 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
     try {
         const resolvedParams = await params;
-        const { data: product } = await api.get(`/products/${resolvedParams.id}`);
+        
+        // Otteniamo il prodotto cercando per slug
+        const response = await fetch("http://localhost:3000/api/products", {
+            cache: "no-store",
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch products");
+        }
+
+        const products = await response.json();
+        const product = products.find((p: any) => p.slug === resolvedParams.slug);
+
+        if (!product) {
+            return {
+                title: "Prodotto non trovato",
+                description: "Il prodotto che stai cercando non esiste.",
+            };
+        }
 
         return {
             title: product.seoTitle || `${product.name} - Demo Store`,
             description: product.seoDescription || product.description,
             alternates: {
-                canonical: `http://localhost:3000/product/${resolvedParams.id}/${resolvedParams.slug}`,
+                canonical: `http://localhost:3000/product/${resolvedParams.slug}`,
             },
             openGraph: {
                 title: product.seoTitle || product.name,
                 description: product.seoDescription || product.description,
-                url: `http://localhost:3000/product/${resolvedParams.id}/${resolvedParams.slug}`,
+                url: `http://localhost:3000/product/${resolvedParams.slug}`,
                 siteName: "Demo Store",
                 images: [
                     {
@@ -70,10 +93,20 @@ export async function generateMetadata({
 export default async function ProductPage({ params }: PageProps) {
     try {
         const resolvedParams = await params;
-        const { data: product } = await api.get(`/products/${resolvedParams.id}`);
 
-        // Verifichiamo che lo slug corrisponda
-        if (product.slug !== resolvedParams.slug) {
+        // Otteniamo il prodotto cercando per slug
+        const response = await fetch("http://localhost:3000/api/products", {
+            cache: "no-store",
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch products");
+        }
+
+        const products = await response.json();
+        const product = products.find((p: any) => p.slug === resolvedParams.slug);
+
+        if (!product) {
             return (
                 <main className="container mx-auto px-4 py-8">
                     <h1 className="text-3xl font-bold mb-4">
@@ -86,6 +119,19 @@ export default async function ProductPage({ params }: PageProps) {
             );
         }
 
+        const categoryMap: { [key: number]: string } = {
+            1: "shoes",
+            2: "hoodies",
+        };
+
+        const categoryName: { [key: number]: string } = {
+            1: "Shoes",
+            2: "Hoodies",
+        };
+
+        const catSlug = categoryMap[product.category_id] || "shoes";
+        const catName = categoryName[product.category_id] || "Shoes";
+
         return (
             <main className="container mx-auto px-4 py-8">
                 <nav className="mb-6">
@@ -94,10 +140,10 @@ export default async function ProductPage({ params }: PageProps) {
                     </Link>
                     <span className="mx-2">›</span>
                     <Link
-                        href={`/category/${product.category_id === 1 ? "shoes" : "hoodies"}`}
+                        href={`/category/${catSlug}`}
                         className="text-blue-600 hover:underline"
                     >
-                        {product.category_id === 1 ? "Shoes" : "Hoodies"}
+                        {catName}
                     </Link>
                     <span className="mx-2">›</span>
                     <span className="text-gray-600">{product.name}</span>

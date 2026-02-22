@@ -51,6 +51,55 @@ const mockProducts = [
         seoDescription:
             "Felpa Nike con zip. Perfetta per ogni stagione. Ordina online con spedizione gratuita.",
     },
+    {
+        id: 5,
+        name: "New Balance 574",
+        slug: "new-balance-574",
+        category_id: 1,
+        description: "Scarpe classiche con design retrò e massimo comfort.",
+        price: 99.99,
+        image: "/products/new-balance-574.jpg",
+        seoTitle: "New Balance 574 - Scarpe Classiche | Demo Store",
+        seoDescription:
+            "Le iconiche New Balance 574. Comfort e stile senza compromessi.",
+    },
+    {
+        id: 6,
+        name: "Converse Chuck Taylor",
+        slug: "converse-chuck-taylor",
+        category_id: 1,
+        description: "Sneaker leggende, perfette per ogni occasione.",
+        price: 69.99,
+        image: "/products/converse-chuck.jpg",
+        seoTitle: "Converse Chuck Taylor - Sneaker Leggenda | Demo Store",
+        seoDescription:
+            "Le Converse Chuck Taylor originali. Stile inconfondibile dal 1917.",
+    },
+    {
+        id: 7,
+        name: "Carhartt Hoodie",
+        slug: "carhartt-hoodie",
+        category_id: 2,
+        description:
+            "Felpa robusta e confortevole, perfetta per il lavoro e il tempo libero.",
+        price: 69.99,
+        image: "/products/carhartt-hoodie.jpg",
+        seoTitle: "Carhartt Hoodie - Felpa Robusta | Demo Store",
+        seoDescription:
+            "Felpa Carhartt di qualità industriale. Duratura e confortevole.",
+    },
+    {
+        id: 8,
+        name: "Champion Hoodie",
+        slug: "champion-hoodie",
+        category_id: 2,
+        description: "Felpa morbida e classica, icona dello stile sportivo.",
+        price: 59.99,
+        image: "/products/champion-hoodie.jpg",
+        seoTitle: "Champion Hoodie - Classico Sportivo | Demo Store",
+        seoDescription:
+            "Felpa Champion originale. Comfort e qualità garantiti.",
+    },
 ];
 
 export async function GET(
