@@ -35,7 +35,6 @@ export async function generateMetadata({
                         alt: product.name,
                     },
                 ],
-                type: "product",
             },
             twitter: {
                 card: "summary_large_image",

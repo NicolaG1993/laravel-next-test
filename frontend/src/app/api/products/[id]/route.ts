@@ -55,9 +55,10 @@ const mockProducts = [
 
 export async function GET(
     request: Request,
-    { params }: { params: { id: string } },
+    { params }: { params: Promise<{ id: string }> },
 ) {
-    const productId = parseInt(params.id);
+    const resolvedParams = await params;
+    const productId = parseInt(resolvedParams.id);
     const product = mockProducts.find((p) => p.id === productId);
 
     if (!product) {
