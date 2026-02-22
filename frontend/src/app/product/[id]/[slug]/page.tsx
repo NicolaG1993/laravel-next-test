@@ -3,10 +3,25 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 interface PageProps {
-    params: {
+    params: Promise<{
         id: string;
         slug: string;
-    };
+    }>;
+}
+
+// Generiamo percorsi statici per i prodotti
+export async function generateStaticParams() {
+    try {
+        const { data: products } = await api.get("/products");
+        
+        return products.map((product: any) => ({
+            id: product.id.toString(),
+            slug: product.slug,
+        }));
+    } catch (error) {
+        console.error("Error generating static params:", error);
+        return [];
+    }
 }
 
 // Generiamo metadata dinamico per il prodotto
@@ -14,18 +29,19 @@ export async function generateMetadata({
     params,
 }: PageProps): Promise<Metadata> {
     try {
-        const { data: product } = await api.get(`/products/${params.id}`);
+        const resolvedParams = await params;
+        const { data: product } = await api.get(`/products/${resolvedParams.id}`);
 
         return {
             title: product.seoTitle || `${product.name} - Demo Store`,
             description: product.seoDescription || product.description,
             alternates: {
-                canonical: `http://localhost:3000/product/${params.id}/${params.slug}`,
+                canonical: `http://localhost:3000/product/${resolvedParams.id}/${resolvedParams.slug}`,
             },
             openGraph: {
                 title: product.seoTitle || product.name,
                 description: product.seoDescription || product.description,
-                url: `http://localhost:3000/product/${params.id}/${params.slug}`,
+                url: `http://localhost:3000/product/${resolvedParams.id}/${resolvedParams.slug}`,
                 siteName: "Demo Store",
                 images: [
                     {
@@ -53,10 +69,11 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: PageProps) {
     try {
-        const { data: product } = await api.get(`/products/${params.id}`);
+        const resolvedParams = await params;
+        const { data: product } = await api.get(`/products/${resolvedParams.id}`);
 
         // Verifichiamo che lo slug corrisponda
-        if (product.slug !== params.slug) {
+        if (product.slug !== resolvedParams.slug) {
             return (
                 <main className="container mx-auto px-4 py-8">
                     <h1 className="text-3xl font-bold mb-4">

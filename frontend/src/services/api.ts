@@ -2,12 +2,8 @@ import axios from "axios";
 
 // Determina il base URL basato sull'ambiente
 const getBaseURL = () => {
-    // In environment server-side, usa il backend locale tramite API route di Next.js
-    if (typeof window === "undefined") {
-        return process.env.NEXT_PUBLIC_API_URL || "";
-    }
-    // Nel browser, usa il backend PHP diretto
-    return process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+    // Usa sempre il proxy di Next.js
+    return process.env.NEXT_PUBLIC_API_URL || "/api/proxy";
 };
 
 export const api = axios.create({
