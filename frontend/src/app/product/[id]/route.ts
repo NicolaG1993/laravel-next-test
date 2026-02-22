@@ -1,29 +1,32 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
-    request: Request,
+    request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const resolvedParams = await params;
         const response = await fetch(
             `http://localhost:8000/api/product/${resolvedParams.id}`,
-            {
-                cache: "no-store",
-            }
+            { cache: "no-store" }
         );
 
         if (!response.ok) {
             return NextResponse.json(
                 { error: "Product not found" },
-                { status: response.status }
+                { status: 404 }
             );
         }
 
-        const data = await response.json();
-        return NextResponse.json(data);
+        const product = await response.json();
+
+        // Redirect permanente (301) verso la rotta con slug
+        return NextResponse.redirect(
+            `${request.nextUrl.origin}/product/${resolvedParams.id}/${product.slug}`,
+            { status: 301 }
+        );
     } catch (error) {
-        console.error("Error fetching product:", error);
+        console.error("Error:", error);
         return NextResponse.json(
             { error: "Internal server error" },
             { status: 500 }
